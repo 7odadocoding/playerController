@@ -67,4 +67,5 @@ This project is open source and welcomes contributions. Feel free to fork, modif
 
 ## To-do list
 
-- Add sprite animation
+- [ ] Add mobile support [partially done]
+- [ ] Add sprite animation based on the player's state
