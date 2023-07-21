@@ -18,6 +18,16 @@ export default class Player {
       this.velocityX = velocityX;
       this.velocityY = velocityY;
       this.ctx = ctx;
+
+      // dash logic
+      this.isDashing = false;
+      this.dashSpeed = 10;
+      this.dashDuration = this.x * 5; // controls the dash distance
+      this.dashCooldown = 1000;
+      this.dashCooldownTimer = 0;
+      this.isDashingCooldown = false;
+      this.facingLeft = false;
+      this.dashGravityMultiplier = 0.2;
    }
 
    update() {
@@ -43,5 +53,72 @@ export default class Player {
          this.y = this.ctx.canvas.height - this.height;
          this.velocityY = 0;
       }
+   }
+
+   // player movement
+
+   moveForward() {
+      this.velocityX = 5;
+      this.facingLeft = false;
+   }
+
+   moveBackward() {
+      this.velocityX = -5;
+      this.facingLeft = true;
+   }
+
+   stop() {
+      this.velocityX = 0;
+   }
+
+   jump() {
+      if (this.y + this.height >= this.ctx.canvas.height) {
+         this.velocityY = -10;
+      }
+   }
+
+   dash() {
+      if (this.isDashing || this.isDashingCooldown) return;
+
+      const startDash = () => {
+         this.isDashing = true;
+         this.velocityX = this.dashSpeed * (this.facingLeft ? -1 : 1);
+         if (this.velocityY < 0)
+            // check if player not on air then apply less gravity for player
+            this.velocityY = -10 * this.dashGravityMultiplier;
+         requestAnimationFrame(updateDash);
+      };
+
+      const updateDash = (currentTime) => {
+         const deltaTime = currentTime - prevTime;
+         prevTime = currentTime;
+
+         const progress = currentTime - startTime;
+         const dashDistance = (progress / this.dashDuration) * this.dashSpeed;
+
+         if (dashDistance < this.dashSpeed) {
+            this.x += this.velocityX * (deltaTime / 1000);
+            this.y += this.velocityY * (deltaTime / 1000);
+            requestAnimationFrame(updateDash);
+         } else {
+            finishDash();
+         }
+      };
+
+      const finishDash = () => {
+         this.velocityX = 0;
+         this.velocityY = 0;
+         this.isDashingCooldown = true;
+
+         setTimeout(() => {
+            this.isDashing = false;
+            this.isDashingCooldown = false;
+         }, this.dashCooldown);
+      };
+
+      let startTime = performance.now();
+      let prevTime = startTime;
+
+      startDash();
    }
 }

@@ -21,45 +21,53 @@ This is a simple PlayerController for 2D games built with HTML canvas 2D context
 You can customize the keys for different actions by creating a `CustomPlayerControls` class and extending it from `PlayerControls`. For example:
 
 ```javascript
-class CustomPlayerControls extends PlayerControls {
-   constructor(player) {
-      super(player);
-      this.customKeys = {
-         Space: 'jump',
-         KeyA: 'moveBackward',
-         KeyD: 'moveForward',
-      };
+export default class CustomPlayerControls extends PlayerControls {
+   constructor(player, keymap) {
+      super(player, keymap);
       this.horizontalKeys = ['KeyA', 'KeyD'];
    }
-
-   moveForward() {
-      this.player.velocityX = 5;
-   }
-
-   moveBackward() {
-      this.player.velocityX = -5;
-   }
-
-   stop() {
-      this.player.velocityX = 0;
-   }
-
-   jump() {
-      if (this.player.y + this.player.height >= this.player.ctx.canvas.height) {
-         this.player.velocityY = -10;
-      }
+   isHorzintallyMoving(event, keyState) {
+      return (
+         this.horizontalKeys &&
+         this.horizontalKeys.includes(event.code) &&
+         !this.horizontalKeys.some((key) => keyState[key])
+      );
    }
 }
+
 ```
 
-To use the custom controls, create a new player controller and pass the `CustomPlayerControls`
-class as the third argument The `CustomPlayerControls` parameter is used to pass a custom controls class to the `PlayerController`. If you want to use the default controls, you can omit the `Controller` argument when creating the `PlayerController`, and it will automatically use `DefaultPlayerControls` :
+To use the custom controls, create a new player controller and pass the `controls` is an instance of `CustomPlayerControls` class as the third argument. If you want to use the default controls, you can use an instance of `DefaultPlayerControls` in `controls` argument when creating the `PlayerController`, and it will automatically use`DefaultPlayerControls` (arrow key, space and right control) :
 
 ```javascript
-const playerController = new PlayerController(player, targetElement, CustomPlayerControls);
+// here's an example of how keymap looks 
+const customKeyMap = {
+   Space: {
+      down: (player) => player.jump(),
+   },
+   KeyA: {
+      down: (player) => player.moveBackward(),
+      up: (player) => player.stop(),
+   },
+   KeyD: {
+      down: (player) => player.moveForward(),
+      up: (player) => player.stop(),
+   },
+   KeyE: {
+      down: (player) => player.dash(),
+   },
+};
+// create player instance
+const player = new Player(50, 50, 20, 20, 'red', 0, 0, ctx);
+
+// then create controls and make sure to include fallback to default controls
+const controls = new CustomPlayerControls(player, customKeyMap) || new DefaultPlayerControls(player);
+// then in addtion of passing player and controls pass targetElement that controller will listen for events on
+const playerController = new PlayerController(player, targetElement, controls);
+
 ```
 
-The `customKeys` object in the `CustomPlayerControls` class should have a property for each action you want to customize, and a string representing the corresponding method name in the player controls. The `horizontalKeys` property is an array of keys that affect the horizontal movement of the player. You can use any valid KeyboardEvent.code values as keys.
+The `customKeyMap` object passed to the `controls` class should have a property for each key you want to listen to. The value of each property should be an object that includes two functions: `up` and `down`. These functions take the player as an argument and define what to do with the player when the key is pressed or released.
 
 ## Contributing
 

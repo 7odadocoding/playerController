@@ -1,47 +1,29 @@
 export default class PlayerControls {
-   constructor(player) {
+   constructor(player, keymap) {
       this.player = player;
-   }
-   moveForward() {
-      console.log('Method not implemented!');
-   }
-   moveBackward() {
-      console.log('Method not implemented!');
-   }
-   stop() {
-      console.log('Method not implemented!');
-   }
-   jump() {
-      console.log('Method not implemented!');
+      this.keymap = keymap;
    }
 }
 
 export class DefaultPlayerControls extends PlayerControls {
    constructor(player) {
-      super(player);
-      this.customKeys = {
-         ArrowLeft: 'moveBackward',
-         ArrowRight: 'moveForward',
-         Space: 'jump',
+      super(player, keymap);
+      keymap = {
+         Space: {
+            up: (player) => player.jump(),
+         },
+         ArrowLeft: {
+            up: (player) => player.moveBackward(),
+            down: (player) => player.stop(),
+         },
+         ArrowRight: {
+            up: (player) => player.moveForward(),
+            down: (player) => player.stop(),
+         },
+         ControlRight: {
+            up: (player) => player.dash(),
+         },
       };
       this.horizontalKeys = ['ArrowLeft', 'ArrowRight'];
-   }
-
-   moveForward() {
-      this.player.velocityX = 5;
-   }
-
-   moveBackward() {
-      this.player.velocityX = -5;
-   }
-
-   stop() {
-      this.player.velocityX = 0;
-   }
-
-   jump() {
-      if (this.player.y + this.player.height >= this.player.ctx.canvas.height) {
-         this.player.velocityY = -10;
-      }
    }
 }
