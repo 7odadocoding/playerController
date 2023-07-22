@@ -37,10 +37,10 @@ export default class CustomPlayerControls extends PlayerControls {
 
 ```
 
-To use the custom controls, create a new player controller and pass the `controls` is an instance of `CustomPlayerControls` class as the third argument. If you want to use the default controls, you can use an instance of `DefaultPlayerControls` in `controls` argument when creating the `PlayerController`, and it will automatically use`DefaultPlayerControls` (arrow key, space and right control) :
+To use the custom controls, create a new player controller and pass the `controls` as an instance of `CustomPlayerControls` class as the third argument. If you want to use the default controls, you can use an instance of `DefaultPlayerControls` in `controls` argument when creating the `PlayerController`, and it will automatically use`DefaultPlayerControls` (arrow key, space and right control) :
 
 ```javascript
-// here's an example of how keymap looks 
+//Here's an example of how the keymap looks 
 const customKeyMap = {
    Space: {
       down: (player) => player.jump(),
@@ -57,12 +57,12 @@ const customKeyMap = {
       down: (player) => player.dash(),
    },
 };
-// create player instance
+//Create a player instance
 const player = new Player(50, 50, 20, 20, 'red', 0, 0, ctx);
 
 // then create controls and make sure to include fallback to default controls
 const controls = new CustomPlayerControls(player, customKeyMap) || new DefaultPlayerControls(player);
-// then in addtion of passing player and controls pass targetElement that controller will listen for events on
+//Then in addition to passing player and controls pass targetElement that controller will listen for events on
 const playerController = new PlayerController(player, targetElement, controls);
 
 ```
@@ -75,5 +75,5 @@ This project is open source and welcomes contributions. Feel free to fork, modif
 
 ## To-do list
 
-- [ ] Add mobile support [partially done]
-- [ ] Add sprite animation based on the player's state
+- [ ] Add mobile support 
+- [ ] Add sprite animation based on the player's state [partially done]
